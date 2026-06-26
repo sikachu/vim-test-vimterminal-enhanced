@@ -2,7 +2,7 @@ function! test_vimterminal_enhanced#run(cmd) abort
   call test_vimterminal_enhanced#close()
 
   let term_position = get(g:, 'test#vim#term_position', 'botright')
-  execute term_position . ' new'
+  execute term_position . (term_position =~# '\d\+$' ? '' : ' ') . 'new'
 
   let cmd = !s:Windows() ?  ['/bin/sh', '-c', a:cmd] : ['cmd.exe', '/c', a:cmd]
   let g:test_vimterminal_enhanced#term_buffer = term_start(cmd, {'curwin': 1, 'term_name': a:cmd})
@@ -14,7 +14,10 @@ function! test_vimterminal_enhanced#run(cmd) abort
   tnoremap <buffer> <C-C> <C-W>N:q!<CR>
 
   wincmd p
-  wincmd =
+
+  if !(term_position =~# '\d\+$')
+    wincmd =
+  endif
 endfunction
 
 function! test_vimterminal_enhanced#close() abort
